@@ -90,15 +90,12 @@ app.get('/', async (req, res) => {
     }
 });
 
-
 app.get('/transactions', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const perPage = parseInt(req.query.perPage) || 10;
         const search = req.query.search ? req.query.search.toLowerCase() : '';
-        const selectedMonth = req.query.month.toLowerCase() || 'march';
-        
-
+        const selectedMonth = (req.query.month || 'march').toLowerCase();
 
         const monthMap = {
             'january': '01',
@@ -115,24 +112,28 @@ app.get('/transactions', async (req, res) => {
             'december': '12',
         };
 
-        const numericMonth = monthMap[selectedMonth.toLowerCase()];
+        const numericMonth = monthMap[selectedMonth];
 
-        // Construct SQL query with search and pagination
+        if (!numericMonth) {
+            return res.status(400).json({ error: 'Invalid month' });
+        }
+
         const sqlQuery = `
-        SELECT *
-        FROM products
-        WHERE
-            strftime('%m', dateOfSale) = ?
-            AND (
-                lower(title) LIKE '%${search}%'
-                OR lower(description) LIKE '%${search}%'
-                OR CAST(price AS TEXT) LIKE '%${search}%'
-            )
-        LIMIT ${perPage} OFFSET ${(page - 1) * perPage};
-    `;
+            SELECT *
+            FROM products
+            WHERE
+                strftime('%m', dateOfSale) = ?
+                AND (
+                    lower(title) LIKE '%' || ? || '%'
+                    OR lower(description) LIKE '%' || ? || '%'
+                    OR CAST(price AS TEXT) LIKE '%' || ? || '%'
+                )
+            LIMIT ? OFFSET ?;
+        `;
 
-        // Execute the SQL query
-        const rows = await db.all(sqlQuery,[numericMonth]);
+        const params = [numericMonth, search, search, search, perPage, (page - 1) * perPage];
+
+        const rows = await db.all(sqlQuery, params);
 
         res.json({
             page,
@@ -140,11 +141,67 @@ app.get('/transactions', async (req, res) => {
             transactions: rows
         });
 
-    } catch (e) {
-        console.error(e.message);
+    } catch (error) {
+        console.error('Error fetching transactions:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+
+// app.get('/transactions', async (req, res) => {
+//     try {
+//         const page = parseInt(req.query.page) || 1;
+//         const perPage = parseInt(req.query.perPage) || 10;
+//         const search = req.query.search ? req.query.search.toLowerCase() : '';
+//         const selectedMonth = req.query.month.toLowerCase() || 'march';
+        
+
+
+//         const monthMap = {
+//             'january': '01',
+//             'february': '02',
+//             'march': '03',
+//             'april': '04',
+//             'may': '05',
+//             'june': '06',
+//             'july': '07',
+//             'august': '08',
+//             'september': '09',
+//             'october': '10',
+//             'november': '11',
+//             'december': '12',
+//         };
+
+//         const numericMonth = monthMap[selectedMonth.toLowerCase()];
+
+//         // Construct SQL query with search and pagination
+//         const sqlQuery = `
+//         SELECT *
+//         FROM products
+//         WHERE
+//             strftime('%m', dateOfSale) = ?
+//             AND (
+//                 lower(title) LIKE '%${search}%'
+//                 OR lower(description) LIKE '%${search}%'
+//                 OR CAST(price AS TEXT) LIKE '%${search}%'
+//             )
+//         LIMIT ${perPage} OFFSET ${(page - 1) * perPage};
+//     `;
+
+//         // Execute the SQL query
+//         const rows = await db.all(sqlQuery,[numericMonth]);
+
+//         res.json({
+//             page,
+//             perPage,
+//             transactions: rows
+//         });
+
+//     } catch (e) {
+//         console.error(e.message);
+//         res.status(500).json({ error: 'Internal Server Error' });
+//     }
+// });
 
 // GET
 // Create an API for statistics
