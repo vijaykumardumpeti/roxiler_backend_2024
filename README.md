@@ -9,7 +9,7 @@ The project is deployed and can be accessed at [https://vijay-roxiler-2024.onren
 
 ### List All Transactions
 
-- **Endpoint:** `/api/transactions`
+- **Endpoint:** `/transactions`
 - **Method:** `GET`
 - **Description:** Lists all transactions based on the provided search parameters and pagination.
   - **Query Parameters:**
@@ -20,7 +20,7 @@ The project is deployed and can be accessed at [https://vijay-roxiler-2024.onren
 
 ### Statistics
 
-- **Endpoint:** `/api/statistics`
+- **Endpoint:** `/statistics`
 - **Method:** `GET`
 - **Description:** Provides statistics for the selected month.
   - **Query Parameters:**
@@ -28,7 +28,7 @@ The project is deployed and can be accessed at [https://vijay-roxiler-2024.onren
 
 ### Bar Chart
 
-- **Endpoint:** `/api/bar-chart`
+- **Endpoint:** `/bar-chart`
 - **Method:** `GET`
 - **Description:** Generates data for a bar chart, showing the price range and the number of items in each range for the selected month.
   - **Query Parameters:**
@@ -36,7 +36,7 @@ The project is deployed and can be accessed at [https://vijay-roxiler-2024.onren
 
 ### Pie Chart
 
-- **Endpoint:** `/api/pie-chart`
+- **Endpoint:** `/pie-chart`
 - **Method:** `GET`
 - **Description:** Generates data for a pie chart, showing unique categories and the number of items from each category for the selected month.
   - **Query Parameters:**
@@ -44,7 +44,7 @@ The project is deployed and can be accessed at [https://vijay-roxiler-2024.onren
 
 ### Combined Data
 
-- **Endpoint:** `/api/combined-data`
+- **Endpoint:** `/combined-data`
 - **Method:** `GET`
 - **Description:** Fetches data from all the above APIs and combines the responses.
 
